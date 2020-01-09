@@ -1,8 +1,11 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
-//app.set("view engine","ejs");
+var mongoose = require("mongoose");
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
 var campgrounds = [
     { name: "Delhi", image: "https://img.sunset02.com/sites/default/files/styles/4_3_horizontal_-_1200x900/public/image/2016/06/main/fall-camping-best-campgrounds-organ-pipe-cactus-national-monument-twin-peaks-1115.jpg" },
     { name: "Mumbai", image: "https://www.reserveamerica.com/webphotos/racms/articles/images/bca19684-d902-422d-8de2-f083e77b50ff_image2_GettyImages-677064730.jpg" },
@@ -25,12 +28,12 @@ app.get("/campgrounds", function (req, res) {
 });
 
 app.post("/campgrounds", function (req, res) {
-    var name=req.body.name;
-    var image=req.body.image;
+    var name = req.body.name;
+    var image = req.body.image;
 
-    var newCampgrounds={
-        name:name,
-        image:image
+    var newCampgrounds = {
+        name: name,
+        image: image
     }
 
     campgrounds.push(newCampgrounds);
@@ -39,7 +42,7 @@ app.post("/campgrounds", function (req, res) {
 
 });
 
-app.get("/campgrounds/new",function(req,res){
+app.get("/campgrounds/new", function (req, res) {
     res.render("new.ejs")
 });
 
