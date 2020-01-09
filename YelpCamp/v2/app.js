@@ -1,47 +1,93 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
+var mongoose = require("mongoose");
 //app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
-var campgrounds = [
-    { name: "Delhi", image: "https://img.sunset02.com/sites/default/files/styles/4_3_horizontal_-_1200x900/public/image/2016/06/main/fall-camping-best-campgrounds-organ-pipe-cactus-national-monument-twin-peaks-1115.jpg" },
-    { name: "Mumbai", image: "https://www.reserveamerica.com/webphotos/racms/articles/images/bca19684-d902-422d-8de2-f083e77b50ff_image2_GettyImages-677064730.jpg" },
-    { name: "Chennai", image: "https://www.nationalparks.nsw.gov.au/-/media/npws/images/parks/hill-end-historic-site/village-campground/village-campground-007.jpg" },
-    { name: "Jaipur", image: "https://www.tripsavvy.com/thmb/nZ6IjP15ygno63xYBCHv7pZBySU=/960x0/filters:no_upscale():max_bytes(150000):strip_icc()/camping-and-tent-under-the-pine-forest-in-sunset-at-pang-ung--pine-forest-park---mae-hong-son--north-of-thailand-638237742-5ab25b2cfa6bcc00365e2824.jpg" },
-    { name: "Delhi", image: "https://img.sunset02.com/sites/default/files/styles/4_3_horizontal_-_1200x900/public/image/2016/06/main/fall-camping-best-campgrounds-organ-pipe-cactus-national-monument-twin-peaks-1115.jpg" },
-    { name: "Mumbai", image: "https://www.reserveamerica.com/webphotos/racms/articles/images/bca19684-d902-422d-8de2-f083e77b50ff_image2_GettyImages-677064730.jpg" },
-    { name: "Chennai", image: "https://www.nationalparks.nsw.gov.au/-/media/npws/images/parks/hill-end-historic-site/village-campground/village-campground-007.jpg" },
-    { name: "Jaipur", image: "https://www.tripsavvy.com/thmb/nZ6IjP15ygno63xYBCHv7pZBySU=/960x0/filters:no_upscale():max_bytes(150000):strip_icc()/camping-and-tent-under-the-pine-forest-in-sunset-at-pang-ung--pine-forest-park---mae-hong-son--north-of-thailand-638237742-5ab25b2cfa6bcc00365e2824.jpg" }
-];
+
+mongoose.connect('mongodb://localhost:27017/yelpcamp_database1', { useNewUrlParser: true, useUnifiedTopology: true, });
+
+var campgroundSchema = new mongoose.Schema({
+    name: String,
+    image: String,
+    description: String
+});
+
+var campground = mongoose.model("campground", campgroundSchema);
+
+// campground.create({
+//     name:"AKshanhs",
+//     image:"https://i.ytimg.com/vi/Xm2d5E0xoCs/maxresdefault.jpg",
+//     Description:"Nbfshsfjsvvfhfjfvfbsvjbvvn"
+//     }
+//     , function (err, campground) {
+//         if (err) {
+//             console.log("error");
+
+//         }
+
+//         else {
+//             console.log(campground);
+//         }
+//     });
 
 app.get("/", function (req, res) {
     res.render("landing.ejs");
 });
 
 app.get("/campgrounds", function (req, res) {
+    campground.find({}, function (err, allCampgrounds) {
+        if (err) {
+            console.log("Error");
+        }
 
-
-    res.render("campgrounds.ejs", { campgrounds: campgrounds });
+        else {
+            res.render("index.ejs", { campgrounds: allCampgrounds });
+        }
+    });
 });
 
 app.post("/campgrounds", function (req, res) {
-    var name=req.body.name;
-    var image=req.body.image;
-
-    var newCampgrounds={
-        name:name,
-        image:image
+    var name = req.body.name;
+    var image = req.body.image;
+    var newCampgrounds = {
+        name: name,
+        image: image,
+        description: req.body.description
     }
 
-    campgrounds.push(newCampgrounds);
+    //campgrounds.push(newCampgrounds);
 
-    res.redirect("/campgrounds");
+    campground.create(newCampgrounds, function (err) {
+        if (err) {
+            console.log(err);
+        }
+
+        else {
+            res.redirect("/campgrounds");
+        }
+    });
+
 
 });
 
-app.get("/campgrounds/new",function(req,res){
+app.get("/campgrounds/new", function (req, res) {
     res.render("new.ejs")
 });
+
+app.get("/campgrounds/:id", function (req, res) {
+    campground.findById(req.params.id, function (err, foundCampgrounds) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.render("show.ejs", { campground: foundCampgrounds });
+        }
+    })
+
+});
+
+
 
 app.listen(3000, function () {
     console.log("Server Started Successfully");

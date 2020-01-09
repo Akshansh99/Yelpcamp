@@ -19,11 +19,9 @@
                 <div style="text-align: center;" class="caption">
                     <h4> <%= place.name %> </h4>
                 </div>
-
-                <div style="text-align: center;">
-                    <p> <%= place.Description %> </p>
-                </div>
-
+                <p style="text-align: center;">
+                    <a href="/campgrounds/<%= place._id %>" class="btn btn-large btn-primary">Info</a>
+                </p>
             </div>
         </div>
         <% }); %>
